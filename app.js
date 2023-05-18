@@ -5,6 +5,7 @@ require("dotenv").config()
 
 // ROUTES
 const userRoutes = require("./routes/user")
+const bookRoutes = require("./routes/books")
 
 // ENVIRONMENT
 const MONGO_DATABASE_URL = process.env.MONGO_DATABASE_URL
@@ -28,6 +29,7 @@ app.use(
 )
 
 app.use("/api/auth", userRoutes)
+app.use("/api/books", bookRoutes)
 
 // app.post("/api/books", (req, res) => {
 // 	console.log(req.body)

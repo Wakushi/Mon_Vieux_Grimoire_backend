@@ -1,6 +1,7 @@
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
+const path = require("path")
 require("dotenv").config()
 
 // ROUTES
@@ -30,10 +31,6 @@ app.use(
 
 app.use("/api/auth", userRoutes)
 app.use("/api/books", bookRoutes)
-
-// app.post("/api/books", (req, res) => {
-// 	console.log(req.body)
-// 	res.status(201).json({ message: "Object created !" })
-// })
+app.use("/images", express.static(path.join(__dirname, "images")))
 
 module.exports = app

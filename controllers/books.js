@@ -48,23 +48,15 @@ exports.modifyBook = (req, res) => {
 				}`
 		  }
 		: { ...req.body }
+
 	delete bookObject.userId
-	Book.findOne({ _id: req.params.id })
-		.then((book) => {
-			if (book.userId !== req.auth.userId) {
-				res.status(401).json({
-					message: "Not authorized to modify this book"
-				})
-			} else {
-				Book.updateOne(
-					{ _id: req.params.id },
-					{ ...bookObject, _id: req.params.id }
-				)
-					.then(() => {
-						res.status(200).json({ message: "Book updated" })
-					})
-					.catch((error) => res.status(400).json({ error }))
-			}
+
+	Book.updateOne(
+		{ _id: req.params.id },
+		{ ...bookObject, _id: req.params.id }
+	)
+		.then(() => {
+			res.status(200).json({ message: "Book updated" })
 		})
 		.catch((error) => res.status(400).json({ error }))
 }
@@ -72,20 +64,14 @@ exports.modifyBook = (req, res) => {
 exports.deleteBook = (req, res) => {
 	Book.findOne({ _id: req.params.id })
 		.then((book) => {
-			if (book.userId !== req.auth.userId) {
-				res.status(401).json({
-					message: "Not authorized to delete this book"
-				})
-			} else {
-				const filename = book.imageUrl.split("/images/")[1]
-				fs.unlink(`images/${filename}`, () => {
-					Book.deleteOne({ _id: req.params.id })
-						.then(() => {
-							res.status(200).json({ message: "Book deleted" })
-						})
-						.catch((error) => res.status(400).json({ error }))
-				})
-			}
+			const filename = book.imageUrl.split("/images/")[1]
+			fs.unlink(`images/${filename}`, () => {
+				Book.deleteOne({ _id: req.params.id })
+					.then(() => {
+						res.status(200).json({ message: "Book deleted" })
+					})
+					.catch((error) => res.status(400).json({ error }))
+			})
 		})
 		.catch((error) => res.status(400).json({ error }))
 }
@@ -97,9 +83,9 @@ exports.rateBook = (req, res) => {
 		Book.findOne({ _id: req.params.id })
 			.then((book) => {
 				if (
-					[
-						...new Set(book.ratings.map((rating) => rating.userId))
-					].includes(req.auth.userId)
+					book.ratings
+						.map((rating) => rating.userId)
+						.includes(req.auth.userId)
 				) {
 					res.status(401).json({ message: "Book already rated" })
 				} else {

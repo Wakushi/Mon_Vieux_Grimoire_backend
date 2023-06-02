@@ -24,13 +24,13 @@ exports.login = (req, res) => {
 	User.findOne({ email: req.body.email })
 		.then((user) => {
 			if (user === null) {
-				res.status(401).json({ message: "Incorrect email or password" })
+				res.status(400).json({ message: "Incorrect email or password" })
 			} else {
 				bcrypt
 					.compare(req.body.password, user.password)
 					.then((valid) => {
 						if (!valid) {
-							res.status(401).json({
+							res.status(400).json({
 								message: "Incorrect email or password"
 							})
 						} else {

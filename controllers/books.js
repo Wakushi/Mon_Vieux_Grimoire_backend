@@ -83,16 +83,20 @@ exports.rateBook = (req, res) => {
 		Book.findOne({ _id: req.params.id })
 			.then((book) => {
 				if (
-					book.ratings
-						.map((rating) => rating.userId)
-						.includes(req.auth.userId)
+					book.ratings.find(
+						(rating) => rating.userId === req.auth.userId
+					)
 				) {
 					res.status(401).json({ message: "Book already rated" })
 				} else {
-					book.ratings.push({
-						userId: req.auth.userId,
-						grade: req.body.rating
-					})
+					const ratings = [
+						...book.ratings,
+						{
+							userId: req.auth.userId,
+							grade: req.body.rating
+						}
+					]
+
 					const newAverageRating =
 						book.ratings
 							.map((rating) => rating.grade)
@@ -102,7 +106,7 @@ exports.rateBook = (req, res) => {
 					Book.findOneAndUpdate(
 						{ _id: req.params.id },
 						{
-							ratings: book.ratings,
+							ratings: ratings,
 							averageRating: newAverageRating
 						},
 						{ new: true }

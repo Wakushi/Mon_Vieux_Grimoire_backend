@@ -6,33 +6,29 @@ require("dotenv").config()
 const JWT_SECRET = process.env.JWT_SECRET
 
 exports.createUser = ({ email, password }) => {
-	return encryptPassword(password)
-		.then((hash) => {
-			const user = new User({
-				email: email,
-				password: hash
-			})
-			return user.save()
+	return encryptPassword(password).then((hash) => {
+		const user = new User({
+			email: email,
+			password: hash
 		})
+		return user.save()
+	})
 }
 
 exports.logUser = ({ email, password }) => {
 	return getUserByEmail(email).then((user) => {
 		if (user === null) {
 			throw new Error("Incorrect email or password")
-		} else {
-			return checkPassword(password, user.password)
-				.then((valid) => {
-					if (!valid) {
-						throw new Error("Incorrect email or password")
-					} else {
-						return {
-							userId: user._id,
-							token: generateAuthToken(user._id)
-						}
-					}
-				})
 		}
+		return checkPassword(password, user.password).then((valid) => {
+			if (!valid) {
+				throw new Error("Incorrect email or password")
+			}
+			return {
+				userId: user._id,
+				token: generateAuthToken(user._id)
+			}
+		})
 	})
 }
 

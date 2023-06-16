@@ -55,19 +55,18 @@ exports.deleteBook = (req, res) => {
 
 exports.rateBook = (req, res) => {
 	if (req.auth.userId !== req.body.userId) {
-		res.status(401).json({ message: "Not authorized" })
-	} else {
-		bookService
-			.rateBook({
-				bookId: req.params.id,
-				userId: req.auth.userId,
-				rating: req.body.rating
-			})
-			.then((ratedBook) => {
-				res.status(200).json(ratedBook)
-			})
-			.catch((error) => res.status(400).json({ error: error.message }))
+		return res.status(401).json({ message: "Not authorized" })
 	}
+	bookService
+		.rateBook({
+			bookId: req.params.id,
+			userId: req.auth.userId,
+			rating: req.body.rating
+		})
+		.then((ratedBook) => {
+			res.status(200).json(ratedBook)
+		})
+		.catch((error) => res.status(400).json({ error: error.message }))
 }
 
 // UTILS

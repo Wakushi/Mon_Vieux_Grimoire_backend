@@ -55,24 +55,23 @@ exports.rateBook = ({ bookId, userId, rating }) => {
 	return Book.findOne({ _id: bookId }).then((book) => {
 		if (book.ratings.find((rating) => rating.userId === userId)) {
 			throw new Error("Book already rated")
-		} else {
-			const ratings = [
-				...book.ratings,
-				{
-					userId: userId,
-					grade: rating
-				}
-			]
-
-			return Book.findOneAndUpdate(
-				{ _id: bookId },
-				{
-					ratings: ratings,
-					averageRating: getAverageRating(ratings, rating)
-				},
-				{ new: true }
-			)
 		}
+		const ratings = [
+			...book.ratings,
+			{
+				userId: userId,
+				grade: rating
+			}
+		]
+
+		return Book.findOneAndUpdate(
+			{ _id: bookId },
+			{
+				ratings: ratings,
+				averageRating: getAverageRating(ratings, rating)
+			},
+			{ new: true }
+		)
 	})
 }
 
